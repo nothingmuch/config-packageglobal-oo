@@ -8,7 +8,8 @@ use warnings;
 use Carp ();
 
 use Context::Handle ();
-use Devel::Symdump ();
+
+our $VERSION = "0.01";
 
 sub new {
 	my ( $class, $pkg, @methods ) = @_;
