@@ -111,7 +111,7 @@ sub _set_conf_key {
 	return $prev;
 }
 
-sub DESTROY { }
+sub DESTROY { } # shush autoload
 
 __PACKAGE__;
 
@@ -137,6 +137,41 @@ Config::PackageGlobal::OO - A generic configuration object for modules with pack
 	Hash::Merge::set_behavior(); # this is returned to it's previous value
 
 =head1 DESCRIPTION
+
+Modules with a package-global configuration tend to be tricky to use uninvasively.
+
+Typically you see code like:
+
+	sub mydump {
+		my ( $self, @values ) = @_;
+
+		local $Data::Dumper::SomeVar = $my_setting;
+		Data::Dumper::Dumper( @values );
+	}
+
+Now, L<Data::Dumper> specifically has an OO interface precisely to solve this
+problem, but some modules, like L<Hash::Merge> do not.
+
+This module provides a generic wrapper object for modules that need this kind
+of fudging in a safe an easy way.
+
+=head1 METHODS
+
+=over 4
+
+=item new $package, @functions
+
+This method returns an object that wraps around $package, and provides action
+methods that wrap around every element in @functions.
+
+=item AUTOLOAD
+
+Calls to the wrapper methods will invoke the action.
+
+Calls to any other method will set a value that will be set before every
+action, and rolled back after every action.
+
+=back
 
 =cut
 
