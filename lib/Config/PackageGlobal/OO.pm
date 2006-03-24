@@ -44,6 +44,8 @@ sub AUTOLOAD {
 		$self->_set_conf( $prev );
 		die $@ if $@;
 
+		# $rv->return barfs here, either because of the goto or because of the AUTOLOAD
+		# bus error in autoload, illegal instruction in goto
 		return $rv->value;
 	} else {
 		unless ( exists $self->{conf}{$method} ) {
