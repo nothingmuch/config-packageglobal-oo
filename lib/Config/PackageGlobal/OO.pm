@@ -92,7 +92,6 @@ sub _conf_accessor {
 			my $var = \${$sym};
 			$sub = sub {
 				$$var = shift if @_;
-				warn "setting to @_" if @_;
 				[ $$var ];
 			};
 		}
