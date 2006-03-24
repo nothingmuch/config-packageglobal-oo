@@ -80,8 +80,9 @@ sub _conf_accessor {
 		no strict 'refs';
 		my $sub;
 		my $sym = $self->{pkg} . '::' . $key;
+		my $symtable = \%{ $self->{pkg} . '::' };
 
-		if ( exists ${$self->{pkg} . '::'}{$key} ) {
+		if ( exists $symtable->{$key} ) {
 			if ( *$sym{CODE} ) {
 				my $orig = \&{$sym};
 				$sub = sub { [ $orig->(@_) ] }
@@ -98,6 +99,12 @@ sub _conf_accessor {
 					[ $$var ];
 				};
 			}
+		} elsif ( exists $symtable->{"get_$key"} ) {
+			my ( $get, $set ) = map { \&{ $self->{pkg} . '::' . $_ . '_' . $key } } qw/get set/;
+			$sub = sub {
+				$set->( @_ ) if @_;
+				[ $get->() ];
+			};
 		} else {
 			Carp::croak("The field '$key' does not exist in $self->{pkg}");
 		}
@@ -135,7 +142,7 @@ Config::PackageGlobal::OO - A generic configuration object for modules with pack
 
 	my $o = Config::PackageGlobal::OO->new( "Hash::Merge", qw/merge/ );
 
-	$o->set_behavior( RIGHT_PRECEDENT );
+	$o->behavior( RIGHT_PRECEDENT );
 
 	my $rv = $o->merge( $hash, $other );
 
