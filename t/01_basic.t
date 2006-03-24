@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Test::More 'no_plan';
+use Test::Exception;
 
 {
 	package Module::Crappy;
@@ -51,3 +52,11 @@ is_deeply( Module::Crappy::some_action(), $defaults , "original values not chang
 is_deeply( $o->some_action(), [ "new-val", "elk", [qw/a b c/] ], "values temporarily changed" );
 
 is_deeply( Module::Crappy::some_action(), $defaults , "original values not changed" );
+
+dies_ok {
+	$m->new("Module::Crappy", "does_not_exist");
+} "can't use non existent function as action method";
+
+dies_ok {
+	$o->this_does_not_exist();
+} "can't use nonexistent field as config method";

@@ -17,7 +17,8 @@ sub new {
 	my %methods;
 	foreach my $method ( @methods ) {
 		no strict 'refs';
-		$methods{$method} = \&{ $pkg . "::" . "$method" }
+		$methods{$method} = \&{ $pkg . "::" . "$method" };
+		defined &{$methods{$method}}
 			|| Carp::croak("The function '$method' does not exist in $pkg");
 	}
 
@@ -80,21 +81,25 @@ sub _conf_accessor {
 		my $sub;
 		my $sym = $self->{pkg} . '::' . $key;
 
-		if ( *$sym{CODE} ) {
-			my $orig = \&{$sym};
-			$sub = sub { [ $orig->(@_) ] }
-		} elsif ( *$sym{ARRAY} ) {
-			my $var = \@{$sym};
-			$sub = sub {
-				@$var = @_ if @_;
-				[ @$var ];
+		if ( exists ${$self->{pkg} . '::'}{$key} ) {
+			if ( *$sym{CODE} ) {
+				my $orig = \&{$sym};
+				$sub = sub { [ $orig->(@_) ] }
+			} elsif ( *$sym{ARRAY} ) {
+				my $var = \@{$sym};
+				$sub = sub {
+					@$var = @_ if @_;
+					[ @$var ];
+				}
+			} else {
+				my $var = \${$sym};
+				$sub = sub {
+					$$var = shift if @_;
+					[ $$var ];
+				};
 			}
 		} else {
-			my $var = \${$sym};
-			$sub = sub {
-				$$var = shift if @_;
-				[ $$var ];
-			};
+			Carp::croak("The field '$key' does not exist in $self->{pkg}");
 		}
 
 		$sub_cache{$self->{pkg}}{$key} = $sub;
