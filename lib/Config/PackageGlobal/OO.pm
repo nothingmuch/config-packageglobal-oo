@@ -185,6 +185,15 @@ action, and rolled back after every action.
 
 =back
 
-=cut
+=head1 AUTHOR
 
+Yuval Kogman <nothingmuch@woobling.org>
+
+=head1 COPYRIGHT & LICENSE
+
+	Copyright (c) 2006 the aforementioned authors. All rights
+	reserved. This program is free software; you can redistribute
+	it and/or modify it under the same terms as Perl itself.
+
+=cut
 
