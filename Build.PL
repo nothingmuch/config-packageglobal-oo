@@ -7,6 +7,7 @@ my $build = Module::Build->new(
 	module_name		   => 'Config::PackageGlobal::OO',
 	requires		   => {
 		'Context::Handle' => '0.01',
+		'Test::Exception' => 0,
 		'ok'			  => 0,
 	},
 	create_readme => 1,
